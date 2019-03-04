@@ -1,0 +1,271 @@
+---
+output:
+  html_document:
+    number_sections: FALSE
+    self_contained: TRUE
+    code_folding: hide
+    toc: TRUE
+    toc_float: TRUE
+    css: www/web_report.css
+    editor_options:
+      chunk_output_type: console
+editor_options:
+  chunk_output_type: console
+---
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato" />
+
+![](www/images/urban-institute-logo.png)
+
+```{r rmarkdown-setup, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r setup}
+options(scipen = 999)
+
+library(tidyverse)
+library(urbnthemes)
+
+set_urbn_defaults(style = "print")
+```
+
+
+### N Charts About Future Retirement Security plots
+### Aaron R. Williams
+### `r format(Sys.time(), "%B %d, %Y %H:%M %p")`
+
+## Chart 1: The share of retirees who will likely experience a decline in living standards will grow over time
+
+* Numerator: age 70, price-adjusted, per-capita annuitized income with imputed rent and other income
+* Denominator: mean price-adjusted, per-capita earnings from ages 50 to 59
+
+```{r chart1}
+cohorts <- c("1936-1945", "1946-1955", "1956-1965", "1966-1975", "1976-1985")
+
+read_csv("data/figure1.csv") %>%
+  filter(ncharts_reprate %in% c("0-50%", "50-75%")) %>%
+  filter(doby %in% cohorts) %>%
+  group_by(doby) %>%
+  summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
+  ggplot(aes(doby, rep_rate_threshold)) +
+  geom_col() +
+  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
+  labs(title = "Age 70 Percentage of People Who Fail to Replace 75% of Age 50-59",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis()   
+```
+
+## Chart 2: Retirement Income at Age 70 is Rising
+
+```{r chart2}
+read_csv("data/figure2.csv") %>%
+  filter(doby %in% cohorts) %>%
+  ggplot(aes(doby, ncharts_aftertax_income_P50)) +
+  geom_col() +
+  geom_text(mapping = aes(label = scales::dollar(ncharts_aftertax_income_P50, largest_with_cents = 0)), 
+            vjust = -1) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
+  labs(title = "Age-70, per-capita, price-adjusted income",
+       subtitle = "Median shared annuitized income with imputed rent, other income, and taxes",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis()
+```
+
+## Chart 3 (old): The Gender Gap in Retirement Income is Narrowing
+
+```{r chart3}
+read_csv("data/figure3.csv") %>%
+  filter(doby %in% cohorts) %>%
+  ggplot(aes(doby, ncharts_aftertax_income_P50, fill = male)) +
+  geom_col(position = "dodge") +
+  geom_text(mapping = aes(label = scales::dollar(ncharts_aftertax_income_P50, largest_with_cents = 0)), 
+            position = position_dodge(width = 0.7), vjust = -1) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
+  labs(title = "Age-70, per-capita, price-adjusted, shared annuitized income with imputed rent, other income, and taxes",
+       subtitle = "By sex",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis() 
+```
+
+## Chart 3 (new): The Gender Gap in Social Secuirty Benefits is Narrowing
+
+```{r, chart3b}
+read_csv("data/figure3b.csv") %>%
+  filter(doby %in% cohorts) %>%
+  ggplot(aes(doby, Ownssb_P50, fill = male)) +
+  geom_col(position = "dodge") +
+  geom_text(mapping = aes(label = scales::dollar(Ownssb_P50, largest_with_cents = 0)), 
+            position = position_dodge(width = 0.7), vjust = -1) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
+  labs(title = "Age-70 price-adjusted Social Security Benefits by Sex",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis() 
+```
+
+## Chart 4: Women's Lifetime Earnings are Increasing
+
+```{r chart4}
+read_csv("data/figure4.csv") %>%
+  filter(doby %in% cohorts) %>%
+  filter(!is.na(male)) %>%
+  ggplot(aes(doby, lifetime_earn_P50, fill = male)) +
+  geom_col(position = "dodge") +
+  geom_text(mapping = aes(label = scales::dollar(lifetime_earn_P50, largest_with_cents = 0)), 
+            position = position_dodge(width = 0.7), vjust = -1) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
+  labs(title = "Price-adjusted earnings from ages 25 to 69 at age 70",
+       subtitle = "By sex",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis() 
+```
+
+## Chart 5: More Women Are Earnings Worker's Social Security Benefits
+
+```{r chart5}
+benefits <- c("Worker only", "Worker supplemented by spousal or survivor", "Spouse or survivor only")
+
+read_csv("data/figure5.csv") %>%
+  filter(doby %in% cohorts) %>%
+  select(doby,
+         `Worker supplemented by spousal or survivor` = dualben_Mean,
+         `Worker only` = wrkonly_Mean,
+         `Spouse or survivor only` = auxonly_Mean) %>%
+  gather(key = "benefit_type", value = "share", -doby) %>%
+  mutate(benefit_type = factor(benefit_type, levels = benefits)) %>%
+  ggplot(aes(benefit_type, share, fill = doby)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Social Security Benefit Type at Age 70 for Female Beneficiaries (%)",
+       x = NULL,
+       y = NULL) +
+  remove_ticks()
+```
+
+## Chart 6: Racial and ethnic disparities in retirement income will narrow modestly 
+
+* We are concerned about showing this because of how racial/ethnic differences in income are estimated and projected. We don’t have a lot of certainty about how gaps will change in the future. 
+
+```{r chart6}
+read_csv("data/figure6.csv") %>%
+  filter(doby %in% cohorts) %>%
+  filter(!is.na(raceeth)) %>%
+  ggplot(aes(doby, ncharts_aftertax_income_P50, fill = raceeth)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.15)), 
+                     labels = scales::dollar) +
+  labs(title = "Age-70, per-capita, price-adjusted, shared annuitized income\nwith imputed rent, other income, and taxes",
+       subtitle = "By race and ethnicity",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks()
+```
+
+Count
+
+```{r chart6-count}
+read_csv("data/figure6ns.csv") %>%
+  filter(doby %in% cohorts) %>%
+  filter(!is.na(raceeth)) %>%
+  ggplot(aes(doby, count_N, fill = raceeth)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.15)), 
+                     labels = scales::comma) +
+  labs(title = "Counts: Age-70, per-capita, price-adjusted, shared annuitized\nwith imputed rent, other income, and taxes",
+       subtitle = "By race and ethnicity",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks()
+```
+
+
+## Chart 7: Social Security Remains a Key Pillar of Retirement Security
+
+* Quntiles are based on per-capita, price-adjusted, shared annuitized income with imputed rent, other income, federal taxes, state taxes, payroll taxes and the Medicare surtax at age 70. The quintiles aren't just based on people at age 70. 
+* Values are the mean of the different sources of income in each quintile. 
+
+```{r chart7}
+incomes <- c("Other income", "Financial income", "DB pension income", "Earnings", "Social Security")
+
+read_csv("data/figure7.csv") %>%
+  filter(doby %in% cohorts) %>%
+  mutate(`Financial income` = pcint_Mean + pcdiv_Mean + pcrentinc_Mean + pcdeltaIRA_Mean, 
+         `Other income` = pcNotModel_Mean) %>%
+  select(nchartQuin,
+         doby,
+         Earnings = PCearn_Mean, 
+         `Social Security` = PCssb_Mean, 
+         `DB pension income` = PCdbinc_Mean, 
+         `Financial income`, `Other income`) %>%
+  gather(key = "income_type", value = "income", Earnings, `Social Security`, `DB pension income`, `Financial income`, `Other income`) %>%
+  mutate(income_type = factor(income_type, levels = incomes)) %>%
+  ggplot(aes(as.character(nchartQuin), income, fill = income_type)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
+                     labels = scales::percent) +
+  facet_wrap(~doby) +
+  labs(title = "Major Sources of Income at Age 70 by Income Quintile",
+       x = "Income quintile",
+       y = NULL) +
+  remove_ticks()  
+```
+
+## Chart 8: Social Security’s Financing Problems Pose Additional Risks 
+
+* Among people with Social Security benefits
+
+```{r chart8}
+read_csv("data/figure8.csv") %>%
+  filter(doby %in% cohorts) %>%
+  select(doby,
+         `Scheduled law` = PCssb_P50,
+         `Payable benefits` = PCssb_payable_P50) %>%
+  gather(key = "Benefit type", value = "benefit", -doby) %>%
+  mutate(`Benefit type` = factor(`Benefit type`, levels = c("Scheduled law", "Payable benefits"))) %>%
+  ggplot(aes(doby, benefit, fill = `Benefit type`)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
+                     labels = scales::dollar) +
+  labs(title = "Median Annual Social Security Benefit at Age 70",
+       subtitle = "Among People with Social Security Benefits",
+       x = "Income quintile",
+       y = NULL) +
+  remove_ticks()
+```
+
+## Chart 9: The share of retirees who will likely experience a decline in living standards will grow slowly over time
+
+With payable Social Security benefits
+
+```{r, chart9}
+read_csv("data/figure9.csv") %>%
+filter(ncharts_reprate_payable %in% c("0-50%", "50-75%")) %>%
+  filter(doby %in% cohorts) %>%
+  group_by(doby) %>%
+  summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
+  ggplot(aes(doby, rep_rate_threshold)) +
+  geom_col() +
+  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
+  labs(title = "Age 70 Percentage of People Who fail to Replace 75% of Age 50-59 Earnings",
+       subtitle = "Social Security benefits under payable law",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis()
+```
+
+
+
