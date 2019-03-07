@@ -36,10 +36,12 @@ set_urbn_defaults(style = "print")
 ### Aaron R. Williams
 ### `r format(Sys.time(), "%B %d, %Y %H:%M %p")`
 
-## Chart 1: The share of retirees who will likely experience a decline in living standards will grow over time
+## Chart 1: The share of retirees who will likely experience a decline in living standards will grow over time {.tabset}
 
 * Numerator: age 70, price-adjusted, per-capita annuitized income with imputed rent and other income
 * Denominator: mean price-adjusted, per-capita earnings from ages 50 to 59
+
+### 75% replacement rate
 
 ```{r chart1}
 cohorts <- c("1936-1945", "1946-1955", "1956-1965", "1966-1975", "1976-1985")
@@ -53,7 +55,71 @@ read_csv("data/figure1.csv") %>%
   geom_col() +
   geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
-  labs(title = "Age 70 Percentage of People Who Fail to Replace 75% of Age 50-59",
+  labs(title = "Age 70 Percentage of People Who Fail to Replace 75% of Age 50-59 Earnings",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis()   
+```
+
+### 80% replacement rate
+
+```{r chart1b}
+cohorts <- c("1936-1945", "1946-1955", "1956-1965", "1966-1975", "1976-1985")
+
+read_csv("data/figure1.csv") %>%
+  filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%")) %>%
+  filter(doby %in% cohorts) %>%
+  group_by(doby) %>%
+  summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
+  ggplot(aes(doby, rep_rate_threshold)) +
+  geom_col() +
+  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
+  labs(title = "Age 70 Percentage of People Who Fail to Replace 80% of Age 50-59 Earnings",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis()   
+```
+
+### 85% replacement rate
+
+```{r chart1c}
+cohorts <- c("1936-1945", "1946-1955", "1956-1965", "1966-1975", "1976-1985")
+
+read_csv("data/figure1.csv") %>%
+  filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%", "80-85%")) %>%
+  filter(doby %in% cohorts) %>%
+  group_by(doby) %>%
+  summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
+  ggplot(aes(doby, rep_rate_threshold)) +
+  geom_col() +
+  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
+  labs(title = "Age 70 Percentage of People Who Fail to Replace 85% of Age 50-59 Earnings",
+       x = "Birth cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis()   
+```
+
+### 90% replacement rate
+
+
+```{r chart1d}
+cohorts <- c("1936-1945", "1946-1955", "1956-1965", "1966-1975", "1976-1985")
+
+read_csv("data/figure1.csv") %>%
+  filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%", "80-85%", "85-90%")) %>%
+  filter(doby %in% cohorts) %>%
+  group_by(doby) %>%
+  summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
+  ggplot(aes(doby, rep_rate_threshold)) +
+  geom_col() +
+  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
+  labs(title = "Age 70 Percentage of People Who Fail to Replace 90% of Age 50-59 Earnings",
        x = "Birth cohort",
        y = NULL) +
   remove_ticks() +
@@ -106,7 +172,7 @@ read_csv("data/figure3b.csv") %>%
   geom_text(mapping = aes(label = scales::dollar(Ownssb_P50, largest_with_cents = 0)), 
             position = position_dodge(width = 0.7), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
-  labs(title = "Age-70 price-adjusted Social Security Benefits by Sex",
+  labs(title = "Median Age-70 Price-Adjusted Social Security Benefits by Sex",
        x = "Birth cohort",
        y = NULL) +
   remove_ticks() +
@@ -124,7 +190,7 @@ read_csv("data/figure4.csv") %>%
   geom_text(mapping = aes(label = scales::dollar(lifetime_earn_P50, largest_with_cents = 0)), 
             position = position_dodge(width = 0.7), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
-  labs(title = "Price-adjusted earnings from ages 25 to 69 at age 70",
+  labs(title = "Median Price-adjusted Earnings from Ages 25 to 69 at Age 70",
        subtitle = "By sex",
        x = "Birth cohort",
        y = NULL) +
@@ -162,6 +228,7 @@ read_csv("data/figure5.csv") %>%
 read_csv("data/figure6.csv") %>%
   filter(doby %in% cohorts) %>%
   filter(!is.na(raceeth)) %>%
+  filter(raceeth != "4.Other") %>%
   ggplot(aes(doby, ncharts_aftertax_income_P50, fill = raceeth)) +
   geom_col(position = "dodge") +
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15)), 
@@ -173,36 +240,24 @@ read_csv("data/figure6.csv") %>%
   remove_ticks()
 ```
 
-Count
-
-```{r chart6-count}
-read_csv("data/figure6ns.csv") %>%
-  filter(doby %in% cohorts) %>%
-  filter(!is.na(raceeth)) %>%
-  ggplot(aes(doby, count_N, fill = raceeth)) +
-  geom_col(position = "dodge") +
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.15)), 
-                     labels = scales::comma) +
-  labs(title = "Counts: Age-70, per-capita, price-adjusted, shared annuitized\nwith imputed rent, other income, and taxes",
-       subtitle = "By race and ethnicity",
-       x = "Birth cohort",
-       y = NULL) +
-  remove_ticks()
-```
+## Chart 7: Social Security Remains a Key Pillar of Retirement Security {.tabset}
 
 
-## Chart 7: Social Security Remains a Key Pillar of Retirement Security
-
-* Quntiles are based on per-capita, price-adjusted, shared annuitized income with imputed rent, other income, federal taxes, state taxes, payroll taxes and the Medicare surtax at age 70. The quintiles aren't just based on people at age 70. 
+* Quntiles are based on per-capita, price-adjusted, shared annuitized income with imputed rent, other income, federal taxes, state taxes, payroll taxes and the Medicare surtax at age 70.
 * Values are the mean of the different sources of income in each quintile. 
 
-```{r chart7}
+Financial income = per-capita interest + per-capita dividends + per-capita rental income + per-capita IRA withdrawals
+Other income = pcNotModel_Mean + per-capita imputed rent + per-capita other income
+
+### All, No Imputed Rent
+
+```{r chart7-no-imputed-rent}
 incomes <- c("Other income", "Financial income", "DB pension income", "Earnings", "Social Security")
 
 read_csv("data/figure7.csv") %>%
   filter(doby %in% cohorts) %>%
-  mutate(`Financial income` = pcint_Mean + pcdiv_Mean + pcrentinc_Mean + pcdeltaIRA_Mean, 
-         `Other income` = pcNotModel_Mean) %>%
+  mutate(`Financial income` = PCwlthinc_Mean + PCRetinc_Mean, 
+         `Other income` = pcNotModel_Mean + pcimpr_Mean) %>%
   select(nchartQuin,
          doby,
          Earnings = PCearn_Mean, 
@@ -222,6 +277,95 @@ read_csv("data/figure7.csv") %>%
   remove_ticks()  
 ```
 
+### All, Imputed Rent
+
+```{r chart7-imputed-rent}
+incomes <- c("Other income", "Financial income", "DB pension income", "Earnings", "Social Security")
+
+read_csv("data/figure7.csv") %>%
+  filter(doby %in% cohorts) %>%
+  mutate(`Financial income` = PCwlthinc_Mean + PCRetinc_Mean, 
+         `Other income` = pcNotModel_Mean + pcimpr_Mean + pcimpr_Mean) %>%
+  select(nchartQuin,
+         doby,
+         Earnings = PCearn_Mean, 
+         `Social Security` = PCssb_Mean, 
+         `DB pension income` = PCdbinc_Mean, 
+         `Financial income`, `Other income`) %>%
+  gather(key = "income_type", value = "income", Earnings, `Social Security`, `DB pension income`, `Financial income`, `Other income`) %>%
+  mutate(income_type = factor(income_type, levels = incomes)) %>%
+  ggplot(aes(as.character(nchartQuin), income, fill = income_type)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
+                     labels = scales::percent) +
+  facet_wrap(~doby) +
+  labs(title = "Major Sources of Income at Age 70 by Income Quintile",
+       x = "Income quintile",
+       y = NULL) +
+  remove_ticks()  
+```
+
+### SSB > 0, No Imputed Rent
+
+**Note:** Quintiles are based on the total age 70 population. 
+
+```{r chart7-ssb-no-imputed-rent}
+incomes <- c("Other income", "Financial income", "DB pension income", "Earnings", "Social Security")
+
+read_csv("data/figure7b.csv") %>%
+  filter(doby %in% cohorts) %>%
+  mutate(`Financial income` = PCwlthinc_Mean + PCRetinc_Mean, 
+         `Other income` = pcNotModel_Mean + pcimpr_Mean) %>%
+  select(nchartQuin,
+         doby,
+         Earnings = PCearn_Mean, 
+         `Social Security` = PCssb_Mean, 
+         `DB pension income` = PCdbinc_Mean, 
+         `Financial income`, `Other income`) %>%
+  gather(key = "income_type", value = "income", Earnings, `Social Security`, `DB pension income`, `Financial income`, `Other income`) %>%
+  mutate(income_type = factor(income_type, levels = incomes)) %>%
+  ggplot(aes(as.character(nchartQuin), income, fill = income_type)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
+                     labels = scales::percent) +
+  facet_wrap(~doby) +
+  labs(title = "Major Sources of Income at Age 70 by Income Quintile",
+       x = "Income quintile",
+       y = NULL) +
+  remove_ticks()  
+```
+
+### SSB > 0, Imputed Rent
+
+**Note:** Quintiles are based on the total age 70 population. 
+
+```{r chart7-ssb-imputed-rent}
+incomes <- c("Other income", "Financial income", "DB pension income", "Earnings", "Social Security")
+
+read_csv("data/figure7b.csv") %>%
+  filter(doby %in% cohorts) %>%
+  mutate(`Financial income` = PCwlthinc_Mean + PCRetinc_Mean, 
+         `Other income` = pcNotModel_Mean + pcimpr_Mean + pcimpr_Mean) %>%
+  select(nchartQuin,
+         doby,
+         Earnings = PCearn_Mean, 
+         `Social Security` = PCssb_Mean, 
+         `DB pension income` = PCdbinc_Mean, 
+         `Financial income`, `Other income`) %>%
+  gather(key = "income_type", value = "income", Earnings, `Social Security`, `DB pension income`, `Financial income`, `Other income`) %>%
+  mutate(income_type = factor(income_type, levels = incomes)) %>%
+  ggplot(aes(as.character(nchartQuin), income, fill = income_type)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
+                     labels = scales::percent) +
+  facet_wrap(~doby) +
+  labs(title = "Major Sources of Income at Age 70 by Income Quintile",
+       x = "Income quintile",
+       y = NULL) +
+  remove_ticks()  
+```
+
+
 ## Chart 8: Social Security’s Financing Problems Pose Additional Risks 
 
 * Among people with Social Security benefits
@@ -236,13 +380,17 @@ read_csv("data/figure8.csv") %>%
   mutate(`Benefit type` = factor(`Benefit type`, levels = c("Scheduled law", "Payable benefits"))) %>%
   ggplot(aes(doby, benefit, fill = `Benefit type`)) +
   geom_col(position = "dodge") +
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
+  geom_text(mapping = aes(label = scales::dollar(benefit, largest_with_cents = 0)), 
+            vjust = -1,
+             position = position_dodge(width = 0.8)) +   
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.15)), 
                      labels = scales::dollar) +
   labs(title = "Median Annual Social Security Benefit at Age 70",
        subtitle = "Among People with Social Security Benefits",
        x = "Income quintile",
        y = NULL) +
-  remove_ticks()
+  remove_ticks() +
+  remove_axis()   
 ```
 
 ## Chart 9: The share of retirees who will likely experience a decline in living standards will grow slowly over time
@@ -265,6 +413,43 @@ filter(ncharts_reprate_payable %in% c("0-50%", "50-75%")) %>%
        y = NULL) +
   remove_ticks() +
   remove_axis()
+```
+
+
+
+
+## Chart 10 (experimental): More wives are out-earning their husband's
+
+```{r}
+read_csv("data/figure10.csv") %>%
+  filter(doby <= 1985) %>%
+  mutate(doby = case_when(
+    doby <= 1945 ~ "1936-1945",
+    doby <= 1955 ~ "1946-1955",
+    doby <= 1965 ~ "1956-1965",
+    doby <= 1975 ~ "1966-1975",
+    doby <= 1985 ~ "1976-1985")
+  ) %>% 
+  ggplot(aes(x = lifetime_earn, y = slifetime_earn)) +
+  geom_point(alpha = 0.05) +
+  geom_smooth(method = "lm", formula = y ~ x - 1) +
+  scale_x_continuous(expand = c(0, 0.05), 
+                     limits = c(0, 10000000),
+                     breaks = c(0, 5000000, 10000000),
+                     labels = scales::dollar) +
+  scale_y_continuous(expand = c(0, 0.05), 
+                     limits = c(0, 10000000),
+                     breaks = c(0, 5000000, 10000000),
+                     labels = scales::dollar) +
+  facet_wrap(~doby) +
+  labs(
+    title = "Wive's lifetime earnings vs. husband's lifetime earnings",
+    subtitle = "Amongst married couples",
+    x = "Wife's lifetime earnings",
+    y = "Husband's lifetime earnings"
+  ) +
+  scatter_grid()
+
 ```
 
 
