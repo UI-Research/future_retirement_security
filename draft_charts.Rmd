@@ -443,7 +443,7 @@ read_csv("data/figure10.csv") %>%
                      labels = scales::dollar) +
   facet_wrap(~doby) +
   labs(
-    title = "Wive's lifetime earnings vs. husband's lifetime earnings",
+    title = "Wife's lifetime earnings vs. husband's lifetime earnings",
     subtitle = "Amongst married couples",
     x = "Wife's lifetime earnings",
     y = "Husband's lifetime earnings"
