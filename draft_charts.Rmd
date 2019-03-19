@@ -20,6 +20,8 @@ editor_options:
 ```{r rmarkdown-setup, echo = FALSE}
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
+
+knitr::opts_chunk$set(fig.width = 6.5, fig.height = 5)
 ```
 
 ```{r setup}
@@ -27,10 +29,14 @@ options(scipen = 999)
 
 library(tidyverse)
 library(urbnthemes)
+library(grid)
+library(gridExtra)
+library(extrafont)
+
+source("urban_style.R")
 
 set_urbn_defaults(style = "print")
 ```
-
 
 ### N Charts About Future Retirement Security plots
 ### Aaron R. Williams
@@ -46,7 +52,7 @@ set_urbn_defaults(style = "print")
 ```{r chart1}
 cohorts <- c("1936-1945", "1946-1955", "1956-1965", "1966-1975", "1976-1985")
 
-read_csv("data/figure1.csv") %>%
+chart1 <- read_csv("data/figure1.csv") %>%
   filter(ncharts_reprate %in% c("0-50%", "50-75%")) %>%
   filter(doby %in% cohorts) %>%
   group_by(doby) %>%
@@ -55,11 +61,16 @@ read_csv("data/figure1.csv") %>%
   geom_col() +
   geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
-  labs(title = "Age 70 Percentage of People Who Fail to Replace 75% of Age 50-59 Earnings",
-       x = "Birth cohort",
+  labs(x = "Birth cohort",
        y = NULL) +
   remove_ticks() +
   remove_axis()   
+
+plotr(titler("Age 70 Percentage of People Who Fail to Replace 75% of Age 50-59 Earnings"),
+      chart1,
+      caption,
+      sourcer("DYNASIM4"),
+      heights = c(2, 30, 1, 1))
 ```
 
 ### 80% replacement rate
@@ -129,95 +140,150 @@ read_csv("data/figure1.csv") %>%
 ## Chart 2: Retirement Income at Age 70 is Rising
 
 ```{r chart2}
-read_csv("data/figure2.csv") %>%
+chart2 <- read_csv("data/figure2.csv") %>%
   filter(doby %in% cohorts) %>%
   ggplot(aes(doby, ncharts_aftertax_income_P50)) +
   geom_col() +
   geom_text(mapping = aes(label = scales::dollar(ncharts_aftertax_income_P50, largest_with_cents = 0)), 
             vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
-  labs(title = "Age-70, per-capita, price-adjusted income",
-       subtitle = "Median shared annuitized income with imputed rent, other income, and taxes",
-       x = "Birth cohort",
+  labs(x = "Birth cohort",
        y = NULL) +
   remove_ticks() +
   remove_axis()
+
+chart2 <- plotr(titler("Age-70, per-capita, price-adjusted income"),
+      subtitler("Median shared annuitized income with imputed rent, other income, and taxes"),
+      chart2,
+      caption,
+      sourcer("DYNASIM4"),
+      heights = c(1.8, 1, 30, 1, 1))
+
+ggsave("charts/chart2.pdf", 
+       chart2,
+       device = cairo_pdf(),
+       width = 6.5,
+       height = 5,
+       units = "in")
 ```
 
 ## Chart 3 (old): The Gender Gap in Retirement Income is Narrowing
 
 ```{r chart3}
-read_csv("data/figure3.csv") %>%
+chart3 <- read_csv("data/figure3.csv") %>%
   filter(doby %in% cohorts) %>%
   ggplot(aes(doby, ncharts_aftertax_income_P50, fill = male)) +
   geom_col(position = "dodge") +
   geom_text(mapping = aes(label = scales::dollar(ncharts_aftertax_income_P50, largest_with_cents = 0)), 
             position = position_dodge(width = 0.7), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
-  labs(title = "Age-70, per-capita, price-adjusted, shared annuitized income with imputed rent, other income, and taxes",
-       subtitle = "By sex",
-       x = "Birth cohort",
+  labs(x = "Birth cohort",
        y = NULL) +
   remove_ticks() +
   remove_axis() 
+
+plotr(titler("Age-70, per-capita, price-adjusted, shared annuitized income with imputed rent, other income, and taxes"),
+      subtitler("By sex"),
+      chart3,
+      caption,
+      sourcer("DYNASIM4"),
+      heights = c(2, 2, 30, 1, 1))
 ```
 
 ## Chart 3 (new): The Gender Gap in Social Secuirty Benefits is Narrowing
 
 ```{r, chart3b}
-read_csv("data/figure3b.csv") %>%
+chart3b <- read_csv("data/figure3b.csv") %>%
   filter(doby %in% cohorts) %>%
   ggplot(aes(doby, Ownssb_P50, fill = male)) +
   geom_col(position = "dodge") +
   geom_text(mapping = aes(label = scales::dollar(Ownssb_P50, largest_with_cents = 0)), 
-            position = position_dodge(width = 0.7), vjust = -1) +    
+            position = position_dodge(width = 0.75), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
-  labs(title = "Median Age-70 Price-Adjusted Social Security Benefits by Sex",
-       x = "Birth cohort",
+  labs(x = "Birth cohort",
        y = NULL) +
   remove_ticks() +
   remove_axis() 
+
+chart3 <- plotr(titler("Median Age-70 Price-Adjusted Social Security Benefits by Sex"),
+      chart3b,
+      caption,
+      sourcer("DYNASIM4"),
+      heights = c(2, 30, 1, 1))
+
+ggsave("charts/chart3.pdf", 
+       chart3,
+       device = cairo_pdf(),
+       width = 6.5,
+       height = 5,
+       units = "in")
 ```
 
 ## Chart 4: Women's Lifetime Earnings are Increasing
 
 ```{r chart4}
-read_csv("data/figure4.csv") %>%
+chart4 <- read_csv("data/figure4.csv") %>%
   filter(doby %in% cohorts) %>%
   filter(!is.na(male)) %>%
   ggplot(aes(doby, lifetime_earn_P50, fill = male)) +
   geom_col(position = "dodge") +
   geom_text(mapping = aes(label = scales::dollar(lifetime_earn_P50, largest_with_cents = 0)), 
-            position = position_dodge(width = 0.7), vjust = -1) +    
+            position = position_dodge(width = 0.9), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
-  labs(title = "Median Price-adjusted Earnings from Ages 25 to 69 at Age 70",
-       subtitle = "By sex",
-       x = "Birth cohort",
+  labs(x = "Birth cohort",
        y = NULL) +
   remove_ticks() +
   remove_axis() 
+
+chart4 <- plotr(titler("Median Price-adjusted Earnings from Ages 25 to 69 at Age 70"),
+      subtitler("By sex"),
+      chart4,
+      caption,
+      sourcer("DYNASIM4"),
+      heights = c(2, 2, 30, 1, 1))
+
+ggsave("charts/chart4.pdf", 
+       chart4,
+       device = cairo_pdf(),
+       width = 6.5,
+       height = 5,
+       units = "in")
 ```
 
 ## Chart 5: More Women Are Earnings Worker's Social Security Benefits
 
 ```{r chart5}
-benefits <- c("Worker only", "Worker supplemented by spousal or survivor", "Spouse or survivor only")
+benefits <- c("Worker only", "Worker supplemented by\nspousal or survivor", "Spouse or survivor only")
 
-read_csv("data/figure5.csv") %>%
+chart5 <- read_csv("data/figure5.csv") %>%
   filter(doby %in% cohorts) %>%
   select(doby,
          `Worker supplemented by spousal or survivor` = dualben_Mean,
          `Worker only` = wrkonly_Mean,
          `Spouse or survivor only` = auxonly_Mean) %>%
   gather(key = "benefit_type", value = "share", -doby) %>%
+  mutate(benefit_type = recode(benefit_type, 
+                               `Worker supplemented by spousal or survivor` = "Worker supplemented by\nspousal or survivor")) %>%  
   mutate(benefit_type = factor(benefit_type, levels = benefits)) %>%
   ggplot(aes(benefit_type, share, fill = doby)) +
   geom_col(position = "dodge") +
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), labels = scales::percent_format(accuracy = 1)) +
-  labs(title = "Social Security Benefit Type at Age 70 for Female Beneficiaries (%)",
-       x = NULL,
+  labs(x = NULL,
        y = NULL) +
   remove_ticks()
+
+chart5 <- plotr(titler("Social Security Benefit Type at Age 70 for Female Beneficiaries (%)"),
+      chart5,
+      caption,
+      sourcer("DYNASIM4"),
+      heights = c(2, 30, 1, 1))
+
+ggsave("charts/chart5.pdf", 
+       chart5,
+       device = cairo_pdf(),
+       width = 6.5,
+       height = 5,
+       units = "in")
 ```
 
 ## Chart 6: Racial and ethnic disparities in retirement income will narrow modestly 
@@ -225,7 +291,7 @@ read_csv("data/figure5.csv") %>%
 * We are concerned about showing this because of how racial/ethnic differences in income are estimated and projected. We don’t have a lot of certainty about how gaps will change in the future. 
 
 ```{r chart6}
-read_csv("data/figure6.csv") %>%
+chart6 <- read_csv("data/figure6.csv") %>%
   filter(doby %in% cohorts) %>%
   filter(!is.na(raceeth)) %>%
   filter(raceeth != "4.Other") %>%
@@ -233,11 +299,23 @@ read_csv("data/figure6.csv") %>%
   geom_col(position = "dodge") +
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15)), 
                      labels = scales::dollar) +
-  labs(title = "Age-70, per-capita, price-adjusted, shared annuitized income\nwith imputed rent, other income, and taxes",
-       subtitle = "By race and ethnicity",
-       x = "Birth cohort",
+  labs(x = "Birth cohort",
        y = NULL) +
   remove_ticks()
+
+chart6 <- plotr(titler("Age-70, per-capita, price-adjusted, shared annuitized income\nwith imputed rent, other income, and taxes"),
+      subtitler("By race and ethnicity"),
+      chart6,
+      caption,
+      sourcer("DYNASIM4"),
+      heights = c(5, 1, 30, 1, 1))
+
+ggsave("charts/chart6.pdf", 
+       chart6,
+       device = cairo_pdf(),
+       width = 6.5,
+       height = 5,
+       units = "in")
 ```
 
 ## Chart 7: Social Security Remains a Key Pillar of Retirement Security {.tabset}
@@ -371,7 +449,7 @@ read_csv("data/figure7b.csv") %>%
 * Among people with Social Security benefits
 
 ```{r chart8}
-read_csv("data/figure8.csv") %>%
+chart8 <- read_csv("data/figure8.csv") %>%
   filter(doby %in% cohorts) %>%
   select(doby,
          `Scheduled law` = PCssb_P50,
@@ -385,12 +463,24 @@ read_csv("data/figure8.csv") %>%
              position = position_dodge(width = 0.8)) +   
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15)), 
                      labels = scales::dollar) +
-  labs(title = "Median Annual Social Security Benefit at Age 70",
-       subtitle = "Among People with Social Security Benefits",
-       x = "Income quintile",
+  labs(x = "Income quintile",
        y = NULL) +
   remove_ticks() +
   remove_axis()   
+
+chart8 <- plotr(titler("Median Annual Social Security Benefit at Age 70"),
+      subtitler("Among People with Social Security Benefits"),
+      chart8,
+      caption,
+      sourcer("DYNASIM4"),
+      heights = c(1.8, 1, 30, 1, 1))
+
+ggsave("charts/chart8.pdf", 
+       chart8,
+       device = cairo_pdf(),
+       width = 6.5,
+       height = 5,
+       units = "in")
 ```
 
 ## Chart 9: The share of retirees who will likely experience a decline in living standards will grow slowly over time
@@ -398,7 +488,7 @@ read_csv("data/figure8.csv") %>%
 With payable Social Security benefits
 
 ```{r, chart9}
-read_csv("data/figure9.csv") %>%
+chart9 <- read_csv("data/figure9.csv") %>%
 filter(ncharts_reprate_payable %in% c("0-50%", "50-75%")) %>%
   filter(doby %in% cohorts) %>%
   group_by(doby) %>%
@@ -407,16 +497,25 @@ filter(ncharts_reprate_payable %in% c("0-50%", "50-75%")) %>%
   geom_col() +
   geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
-  labs(title = "Age 70 Percentage of People Who fail to Replace 75% of Age 50-59 Earnings",
-       subtitle = "Social Security benefits under payable law",
-       x = "Birth cohort",
+  labs(x = "Birth cohort",
        y = NULL) +
   remove_ticks() +
   remove_axis()
+
+chart9 <- plotr(titler("Age 70 Percentage of People Who fail to Replace 75% of Age 50-59 Earnings"),
+      subtitler("Social Security benefits under payable law"),
+      chart9,
+      caption,
+      sourcer("DYNASIM4"),
+      heights = c(1.8, 1, 30, 1, 1))
+
+ggsave("charts/chart9.pdf", 
+       chart9,
+       device = cairo_pdf(),
+       width = 6.5,
+       height = 5,
+       units = "in")
 ```
-
-
-
 
 ## Chart 10 (experimental): More wives are out-earning their husband's
 
