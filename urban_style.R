@@ -2,7 +2,7 @@ titler <- function(title) {
   textGrob(title, 
            x = unit(0, "npc"), 
            hjust = 0, 
-           vjust = 0,
+           vjust = 0.5,
            gp = gpar(fontsize = 12, fontfamily = "Lato"))
 }
 
@@ -10,7 +10,7 @@ subtitler <- function(subtitle) {
   textGrob(subtitle, 
            x = unit(0, "npc"), 
            hjust = 0, 
-           vjust = 0,
+           vjust = 0.5,
            gp = gpar(fontsize = 9.5, fontfamily = "Lato"))
 }
 
