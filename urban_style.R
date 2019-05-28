@@ -3,7 +3,10 @@ titler <- function(title) {
            x = unit(0, "npc"), 
            hjust = 0, 
            vjust = 0.5,
-           gp = gpar(fontsize = 12, fontfamily = "Lato"))
+           gp = gpar(fontsize = 12, 
+                     fontfamily = "Lato", 
+                     lineheight = 1,
+                     linewidth = 0.5))
 }
 
 subtitler <- function(subtitle) {

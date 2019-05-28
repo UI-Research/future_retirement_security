@@ -56,51 +56,66 @@ cohorts <- c("1936-1945", "1946-1955", "1956-1965", "1966-1975", "1976-1985")
 #' @param x a vector with cohorts
 #'
 #' @return a vector of renamed cohorts
-rename_cohort <- function(x) {
-  cohort <- list("1936-1945" = "Pre-boomers (1936–45)", 
-                 "1946-1955" = "Early boomers (1946–55)", 
-                 "1956-1965" = "Late boomers (1956–65)", 
-                 "1966-1975" = "Gen Xers (1966–75)", 
-                 "1976-1985" = "Early Millenials (1976-1985)")
-  
-  if (is.null(cohort[[x]])) {
-    print("ERROR: no cohort match")
-    stop()
-  } else {
-    return(cohort[[x]])
-  }
-}
-
 rename_cohort <- function(x, two_lines = TRUE) {
   if (two_lines == TRUE) {
     cohort <- recode(x,
-      `1936-1945` = "Pre-boomers\n(1936–45)", 
-      `1946-1955` = "Early boomers\n(1946–55)", 
-      `1956-1965` = "Late boomers\n(1956–65)", 
-      `1966-1975` = "Gen Xers\n(1966–75)", 
-      `1976-1985` = "Early millenials\n(1976-1985)")  
+      `1936-1945` = "Pre-boomers\n(1936–1945)", 
+      `1946-1955` = "Early boomers\n(1946–1955)", 
+      `1956-1965` = "Late boomers\n(1956–1965)", 
+      `1966-1975` = "Gen Xers\n(1966–1975)", 
+      `1976-1985` = "Early millennials\n(1976-1985)")  
     
-    factor(cohort, levels = c("Pre-boomers\n(1936–45)", 
-                              "Early boomers\n(1946–55)", 
-                              "Late boomers\n(1956–65)", 
-                              "Gen Xers\n(1966–75)", 
-                              "Early millenials\n(1976-1985)"))
+    factor(cohort, levels = c("Pre-boomers\n(1936–1945)", 
+                              "Early boomers\n(1946–1955)", 
+                              "Late boomers\n(1956–1965)", 
+                              "Gen Xers\n(1966–1975)", 
+                              "Early millennials\n(1976-1985)"))
   } else {
     cohort <- recode(x,
-      `1936-1945` = "Pre-boomers (1936–45)", 
-      `1946-1955` = "Early boomers (1946–55)", 
-      `1956-1965` = "Late boomers (1956–65)", 
-      `1966-1975` = "Gen Xers (1966–75)", 
-      `1976-1985` = "Early millenials (1976-1985)") 
+      `1936-1945` = "Pre-boomers (1936–1945)", 
+      `1946-1955` = "Early boomers (1946–1955)", 
+      `1956-1965` = "Late boomers (1956–1965)", 
+      `1966-1975` = "Gen Xers (1966–1975)", 
+      `1976-1985` = "Early millennials (1976-1985)") 
       
-    factor(cohort, levels = c("Pre-boomers (1936–45)", 
-                              "Early boomers (1946–55)", 
-                              "Late boomers (1956–65)", 
-                              "Gen Xers (1966–75)", 
-                              "Early millenials (1976-1985)"))
+    factor(cohort, levels = c("Pre-boomers (1936–1945)", 
+                              "Early boomers (1946–1955)", 
+                              "Late boomers (1956–1965)", 
+                              "Gen Xers (1966–1975)", 
+                              "Early millennials (1976-1985)"))
   }
 }
 
+#' to_ordinal
+#'
+#' @param x translate numeric integers into ordinal numbers in a character vector 
+#'
+#' @return
+#' @export
+#'
+#' @examples to_ordinal(1:30)
+to_ordinal <- function(x, capitalize = FALSE, as_factor = FALSE) {
+  # case_when(x %in% 11:13 ~ paste0(x, "th"),
+  #           x %% 10 == 0 ~ paste0(x, "th"),
+  #           x %% 10 == 1 ~ paste0(x, "st"),
+  #           x %% 10 == 2 ~ paste0(x, "nd"),
+  #           x %% 10 == 3 ~ paste0(x, "rd"),
+  #           x %% 10 %in% 4:9 ~ paste0(x, "th"),
+  #           TRUE ~ "ERROR")
+
+  word <- case_when(x == 0 ~ "Zeroth",
+                    x == 1 ~ "Bottom",
+                    x == 2 ~ "Second",
+                    x == 3 ~ "Third",
+                    x == 4 ~ "Fourth",
+                    x == 5 ~ "Top")  
+  
+  if (capitalize == TRUE) {
+    tools::toTitleCase(word)
+  } else {
+    word
+  }
+}
 ```
 
 ### 75% replacement rate
@@ -114,7 +129,7 @@ chart1 <- read_csv("data/figure1.csv") %>%
   summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
   ggplot(aes(doby, rep_rate_threshold)) +
   geom_col() +
-  geom_text(mapping = aes(label = scales::percent_format(accuracy = 0.1)(rep_rate_threshold / 100)), vjust = -1) +    
+  geom_text(mapping = aes(label = scales::percent_format(accuracy = 1)(rep_rate_threshold / 100)), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
                      limits = c(0, 50)) +
   labs(x = "Birth Cohort",
@@ -123,121 +138,121 @@ chart1 <- read_csv("data/figure1.csv") %>%
   remove_axis()   
 
 # create the output plot
-plotr(titler("An Increasing Share of Retirees Won't Replace Pre-Retirement Incomes"),
-      subtitler("Age 70 percentage of people who fail to replace 75% of age 50-59 earnings"),
+plotr(titler("More than One-Third of Early Millennials Will Likely See Their Living Standards Fall\nwhen They Retire"),
+      subtitler("Percentage of adults unable to replace 75% of their preretirement earnings at age 70"),
       chart1,
       caption,
       sourcer("DYNASIM4, ID963"),
-      heights = c(2, 2, 30, 1, 1))
+      heights = c(2.6, 2, 30, 1, 1))
 ```
 
-### 80% replacement rate
+<!-- ### 80% replacement rate -->
 
-```{r chart1b}
-chart1 <- read_csv("data/figure1.csv") %>%
-  filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%")) %>%
-  filter(doby %in% cohorts) %>%
-  mutate(doby = rename_cohort(doby)) %>%  
-  group_by(doby) %>%
-  summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
-  ggplot(aes(doby, rep_rate_threshold)) +
-  geom_col() +
-  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
-                     limits = c(0, 50)) +
-  labs(x = "Birth Cohort",
-       y = NULL) +
-  remove_ticks() +
-  remove_axis()   
+<!-- ```{r chart1b} -->
+<!-- chart1 <- read_csv("data/figure1.csv") %>% -->
+<!--   filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%")) %>% -->
+<!--   filter(doby %in% cohorts) %>% -->
+<!--   mutate(doby = rename_cohort(doby)) %>%   -->
+<!--   group_by(doby) %>% -->
+<!--   summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>% -->
+<!--   ggplot(aes(doby, rep_rate_threshold)) + -->
+<!--   geom_col() + -->
+<!--   geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +     -->
+<!--   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), -->
+<!--                      limits = c(0, 50)) + -->
+<!--   labs(x = "Birth Cohort", -->
+<!--        y = NULL) + -->
+<!--   remove_ticks() + -->
+<!--   remove_axis()    -->
 
-# create the output plot
-plotr(titler("Age 70 Percentage of People Who Fail to Replace 80% of Age 50-59 Earnings"),
-      chart1,
-      caption,
-      sourcer("DYNASIM4, ID963"),
-      heights = c(2, 30, 1, 1))
-```
+<!-- # create the output plot -->
+<!-- plotr(titler("Age 70 Percentage of People Who Fail to Replace 80% of Age 50-59 Earnings"), -->
+<!--       chart1, -->
+<!--       caption, -->
+<!--       sourcer("DYNASIM4, ID963"), -->
+<!--       heights = c(2, 30, 1, 1)) -->
+<!-- ``` -->
 
-### 85% replacement rate
+<!-- ### 85% replacement rate -->
 
-```{r chart1c}
-chart1 <- read_csv("data/figure1.csv") %>%
-  filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%", "80-85%")) %>%
-  filter(doby %in% cohorts) %>%
-  mutate(doby = rename_cohort(doby)) %>%  
-  group_by(doby) %>%
-  summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
-  ggplot(aes(doby, rep_rate_threshold)) +
-  geom_col() +
-  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
-                     limits = c(0, 50)) +
-  labs(x = "Birth Cohort",
-       y = NULL) +
-  remove_ticks() +
-  remove_axis()   
+<!-- ```{r chart1c} -->
+<!-- chart1 <- read_csv("data/figure1.csv") %>% -->
+<!--   filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%", "80-85%")) %>% -->
+<!--   filter(doby %in% cohorts) %>% -->
+<!--   mutate(doby = rename_cohort(doby)) %>%   -->
+<!--   group_by(doby) %>% -->
+<!--   summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>% -->
+<!--   ggplot(aes(doby, rep_rate_threshold)) + -->
+<!--   geom_col() + -->
+<!--   geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +     -->
+<!--   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), -->
+<!--                      limits = c(0, 50)) + -->
+<!--   labs(x = "Birth Cohort", -->
+<!--        y = NULL) + -->
+<!--   remove_ticks() + -->
+<!--   remove_axis()    -->
 
-# create the output plot
-plotr(titler("Age 70 Percentage of People Who Fail to Replace 85% of Age 50-59 Earnings"),
-      chart1,
-      caption,
-      sourcer("DYNASIM4, ID963"),
-      heights = c(2, 30, 1, 1))
-```
+<!-- # create the output plot -->
+<!-- plotr(titler("Age 70 Percentage of People Who Fail to Replace 85% of Age 50-59 Earnings"), -->
+<!--       chart1, -->
+<!--       caption, -->
+<!--       sourcer("DYNASIM4, ID963"), -->
+<!--       heights = c(2, 30, 1, 1)) -->
+<!-- ``` -->
 
-### 90% replacement rate
+<!-- ### 90% replacement rate -->
 
-```{r chart1d}
-chart1 <- read_csv("data/figure1.csv") %>%
-  filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%", "80-85%", "85-90%")) %>%
-  filter(doby %in% cohorts) %>%
-  mutate(doby = rename_cohort(doby)) %>%
-  group_by(doby) %>%
-  summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
-  ggplot(aes(doby, rep_rate_threshold)) +
-  geom_col() +
-  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
-                     limits = c(0, 50)) +
-  labs(x = "Birth Cohort",
-       y = NULL) +
-  remove_ticks() +
-  remove_axis()   
+<!-- ```{r chart1d} -->
+<!-- chart1 <- read_csv("data/figure1.csv") %>% -->
+<!--   filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%", "80-85%", "85-90%")) %>% -->
+<!--   filter(doby %in% cohorts) %>% -->
+<!--   mutate(doby = rename_cohort(doby)) %>% -->
+<!--   group_by(doby) %>% -->
+<!--   summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>% -->
+<!--   ggplot(aes(doby, rep_rate_threshold)) + -->
+<!--   geom_col() + -->
+<!--   geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +     -->
+<!--   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), -->
+<!--                      limits = c(0, 50)) + -->
+<!--   labs(x = "Birth Cohort", -->
+<!--        y = NULL) + -->
+<!--   remove_ticks() + -->
+<!--   remove_axis()    -->
 
-# create the output plot
-plotr(titler("Age 70 Percentage of People Who Fail to Replace 90% of Age 50-59 Earnings"),
-      chart1,
-      caption,
-      sourcer("DYNASIM4, ID963"),
-      heights = c(1.8, 30, 1, 1))
-```
+<!-- # create the output plot -->
+<!-- plotr(titler("Age 70 Percentage of People Who Fail to Replace 90% of Age 50-59 Earnings"), -->
+<!--       chart1, -->
+<!--       caption, -->
+<!--       sourcer("DYNASIM4, ID963"), -->
+<!--       heights = c(1.8, 30, 1, 1)) -->
+<!-- ``` -->
 
-### 100% replacement rate
+<!-- ### 100% replacement rate -->
 
-```{r chart1e}
-chart1 <- read_csv("data/figure1.csv") %>%
-  filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%", "80-85%", "85-90%", "90-95%", "95-100%")) %>%
-  filter(doby %in% cohorts) %>%
-  mutate(doby = rename_cohort(doby)) %>%
-  group_by(doby) %>%
-  summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
-  ggplot(aes(doby, rep_rate_threshold)) +
-  geom_col() +
-  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +    
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
-                     limits = c(0, 50)) +
-  labs(x = "Birth Cohort",
-       y = NULL) +
-  remove_ticks() +
-  remove_axis()   
+<!-- ```{r chart1e} -->
+<!-- chart1 <- read_csv("data/figure1.csv") %>% -->
+<!--   filter(ncharts_reprate %in% c("0-50%", "50-75%", "75-80%", "80-85%", "85-90%", "90-95%", "95-100%")) %>% -->
+<!--   filter(doby %in% cohorts) %>% -->
+<!--   mutate(doby = rename_cohort(doby)) %>% -->
+<!--   group_by(doby) %>% -->
+<!--   summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>% -->
+<!--   ggplot(aes(doby, rep_rate_threshold)) + -->
+<!--   geom_col() + -->
+<!--   geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), vjust = -1) +     -->
+<!--   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), -->
+<!--                      limits = c(0, 50)) + -->
+<!--   labs(x = "Birth Cohort", -->
+<!--        y = NULL) + -->
+<!--   remove_ticks() + -->
+<!--   remove_axis()    -->
 
-# create the output plot
-plotr(titler("Age 70 Percentage of People Who Fail to Replace 100% of Age 50-59 Earnings"),
-      chart1,
-      caption,
-      sourcer("DYNASIM4, ID963"),
-      heights = c(1.8, 30, 1, 1))
-```
+<!-- # create the output plot -->
+<!-- plotr(titler("Age 70 Percentage of People Who Fail to Replace 100% of Age 50-59 Earnings"), -->
+<!--       chart1, -->
+<!--       caption, -->
+<!--       sourcer("DYNASIM4, ID963"), -->
+<!--       heights = c(1.8, 30, 1, 1)) -->
+<!-- ``` -->
 
 ## Chart 2: Retirement Incomes are Increasing
 
@@ -247,7 +262,7 @@ chart2 <- read_csv("data/figure2.csv") %>%
   mutate(doby = rename_cohort(doby)) %>%  
   ggplot(aes(doby, ncharts_aftertax_income_P50)) +
   geom_col() +
-  geom_text(mapping = aes(label = scales::dollar(ncharts_aftertax_income_P50, largest_with_cents = 0)), 
+  geom_text(mapping = aes(label = scales::dollar(signif(ncharts_aftertax_income_P50, 3), largest_with_cents = 0)), 
             vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
   labs(x = "Birth Cohort",
@@ -256,12 +271,12 @@ chart2 <- read_csv("data/figure2.csv") %>%
   remove_axis()
 
 # create the output plot
-plotr(titler("Retirement Incomes are Increasing"),
-      subtitler("Median age-70, per-capita, price-adjusted shared annuitized income less taxes"),
+plotr(titler("A Typical Early Millennial Retiree Will Receive about 30 Percent More Income Than a\nTypical Retiree Born 40 Years Earlier"),
+      subtitler("Median annual Social Security income at age 70 (constant 2018 dollars)"),
       chart2,
       caption,
       sourcer("DYNASIM4, ID963"),
-      heights = c(1.8, 1, 30, 1, 1))
+      heights = c(2.8, 1, 30, 1, 1))
 ```
 
 ## Chart 3: The Gender Gap in Social Secuirty Benefits is Narrowing
@@ -275,7 +290,7 @@ chart3b <- read_csv("data/figure3b.csv") %>%
   mutate(doby = rename_cohort(doby)) %>%  
   ggplot(aes(doby, Ownssb_P50, fill = male)) +
   geom_col(position = "dodge") +
-  geom_text(mapping = aes(label = scales::dollar(Ownssb_P50, largest_with_cents = 0)), 
+  geom_text(mapping = aes(label = scales::dollar(round(Ownssb_P50, -2), largest_with_cents = 0)), 
             position = position_dodge(width = 0.75), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
   labs(x = "Birth Cohort",
@@ -284,12 +299,12 @@ chart3b <- read_csv("data/figure3b.csv") %>%
   remove_axis() 
 
 # create the output plot
-plotr(titler("The Gender Gap in Social Security Benefits is Narrowing"),
-      subtitler("Median Age-70 Price-Adjusted Social Security Benefits by Sex"),
+plotr(titler("For Early Millennials, Women’s Median Age-70 Social Security Benefits Will Rise to\n85 Percent of the Median for Men"),
+      subtitler("Median annual Social Security income at age 70 (constant 2018 dollars)"),
       chart3b,
       caption,
       sourcer("DYNASIM4, ID963"),
-      heights = c(1.8, 2, 30, 1, 1))
+      heights = c(2.6, 2, 30, 1, 1))
 ```
 
 ## Chart 4: Women's Lifetime Earnings are Increasing
@@ -304,7 +319,7 @@ chart4 <- read_csv("data/figure4.csv") %>%
   mutate(doby = rename_cohort(doby)) %>%  
   ggplot(aes(doby, lifetime_earn_P50, fill = male)) +
   geom_col(position = "dodge") +
-  geom_text(mapping = aes(label = scales::dollar(lifetime_earn_P50, largest_with_cents = 0)), 
+  geom_text(mapping = aes(label = scales::dollar(round(lifetime_earn_P50, -2), largest_with_cents = 0)), 
             position = position_dodge(width = 1), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15))) +
   labs(x = "Birth Cohort",
@@ -313,12 +328,12 @@ chart4 <- read_csv("data/figure4.csv") %>%
   remove_axis() 
 
 # create the output plot
-plotr(titler("Growth in Earnings, Especially by Women, Will Boost Future Retirement Incomes"),
-      subtitler("Median price-adjusted earnings from ages 25 to 69 at age 70 by sex"),
+plotr(titler("Over Her Lifetime, a Typical Early Millennial Woman Will Earn More than Twice as Much\nas Her Pre-Boomer Counterpart"),
+      subtitler("Median earnings from ages 25 to 69 (constant 2018 dollars)"),
       chart4,
       caption,
       sourcer("DYNASIM4, ID963"),
-      heights = c(1.8, 2, 30, 1, 1))
+      heights = c(2.6, 2, 30, 1, 1))
 ```
 
 ## Chart 5: More Women Are Earnings Worker's Social Security Benefits
@@ -375,15 +390,15 @@ chart6 <- read_csv("data/figure6.csv") %>%
   remove_ticks()
 
 # create the output plot
-plotr(titler("Racial and Ethnic Disparities in Retirement Income Will Persist"),
-      subtitler("Age-70, per-capita, price-adjusted, shared annuitized income less taxes by race and ethnicity"),
+plotr(titler("Although Retirement Incomes Are Projected to Rise for People of Color, They\nWill Continue to Lag Far Behind Incomes for Non-Hispanic Whites"),
+      subtitler("Median annual per capita after-tax family income at age 70 (thousands of constant 2018 dollars)"),
       chart6,
       caption,
       sourcer("DYNASIM4, ID963"),
-      heights = c(1.8, 1, 30, 1, 1))
+      heights = c(2.8, 1, 30, 1, 1))
 ```
 
-## Chart 7: Social Security Is a Pillar of Retirement Security {.tabset}
+## Chart 7: Social Security Is a Pillar of Retirement Security
 
 * Quintiles are based on per-capita, price-adjusted, shared annuitized income with federal taxes, state taxes, payroll taxes and the Medicare surtax at age 70.
 * Values are the mean of the different sources of income in each quintile. 
@@ -392,41 +407,14 @@ Financial income = per-capita interest + per-capita dividends + per-capita renta
 
 Other income = pcNotModel_Mean
 
-### Arrangement 1
-
 ```{r chart7}
 incomes <- c("Other income", "Financial income", "DB pension income", "Earnings", "Social Security")
 
-read_csv("data/figure7.csv") %>%
-  filter(doby %in% cohorts) %>%
-  mutate(`Financial income` = PCwlthinc_Mean + PCRetinc_Mean, 
-         `Other income` = pcNotModel_Mean) %>%
-  select(nchartQuin,
-         doby,
-         Earnings = PCearn_Mean, 
-         `Social Security` = PCssb_Mean, 
-         `DB pension income` = PCdbinc_Mean, 
-         `Financial income`, `Other income`) %>%
-  gather(key = "income_type", value = "income", Earnings, `Social Security`, `DB pension income`, `Financial income`, `Other income`) %>%
-  mutate(doby = rename_cohort(doby, two_lines = FALSE)) %>% 
-  mutate(income_type = factor(income_type, levels = incomes)) %>%
-  ggplot(aes(as.character(nchartQuin), income, fill = income_type)) +
-  geom_col(position = "fill") +
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
-                     labels = scales::percent) +
-  facet_wrap(~doby) +
-  labs(title = "Major Sources of Income at Age 70 by Income Quintile",
-       x = "Income quintile",
-       y = NULL) +
-  remove_ticks()  
-```
-
-### Arrangement 2
-
-```{r chart7-alt}
-incomes <- c("Other income", "Financial income", "DB pension income", "Earnings", "Social Security")
+quintile <- c("Bottom quintile", "Second quintile", "Third quintile", "Fourth quintile", "Top quintile")
 
 chart7 <- read_csv("data/figure7.csv") %>%
+  mutate(nchartQuin = paste(to_ordinal(nchartQuin), "quintile")) %>%
+  mutate(nchartQuin = factor(nchartQuin, levels = quintile)) %>%
   filter(doby %in% cohorts) %>%
   mutate(`Financial income` = PCwlthinc_Mean + PCRetinc_Mean, 
          `Other income` = pcNotModel_Mean) %>%
@@ -442,30 +430,64 @@ chart7 <- read_csv("data/figure7.csv") %>%
   geom_col(position = "fill") +
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
                      labels = scales::percent) +
-  facet_wrap(~as.character(nchartQuin)) +
+  facet_wrap(~nchartQuin) +
   labs(x = "Birth Cohort",
        y = NULL) +
   remove_ticks() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 # create the output plot
-plotr(titler("Social Security Is a Pillar of Retirement Security"),
-      subtitler("Major sources of income at age 70 by income quintile"),
+plotr(titler("Social Security Accounts for About 80 Percent of Income for Low-Income Retirees"),
+      subtitler("Percent of age-70 per capita family income from Social Security by family income quintile"),
       chart7,
       caption,
       sourcer("DYNASIM4, ID963"),
       heights = c(1.8, 1, 30, 1, 1))
 ```
 
+
+
+
+
+```{r chart7alt}
+chart7alt <- read_csv("data/figure7.csv") %>%
+  mutate(nchartQuin = paste(to_ordinal(nchartQuin), "quintile")) %>%
+  mutate(nchartQuin = factor(nchartQuin, levels = quintile)) %>%
+  mutate(ss_share = PCssb_Mean / ncharts_aftertax_income_Mean) %>%
+  filter(doby %in% cohorts) %>%
+  select(nchartQuin, doby, ss_share) %>%
+  ggplot(aes(doby, ss_share, fill = nchartQuin)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = scales::percent_format(accuracy = 1)(ss_share)),
+            position = position_dodge(width = 0.7),
+            vjust = -0.8,
+            hjust = 0.35) +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)), 
+                     labels = scales::percent) +
+  labs(x = "Birth Cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis()
+
+# create the output plot
+plotr(titler("Social Security Accounts for About 80 Percent of Income for Low-Income Retirees"),
+      subtitler("Percent of age-70 per capita family income from Social Security by family income quintile"),
+      chart7alt,
+      caption,
+      sourcer("DYNASIM4, ID963"),
+      heights = c(1.8, 1, 30, 1, 1))
+```
+
+
 ## Chart 9: The share of retirees who will likely experience a decline in living standards will grow slowly over time
 
 ```{r, chart9}
 
 scheduled <- read_csv("data/figure1.csv") %>%
-  mutate(law = "Scheduled law")
+  mutate(law = "Current Social Security benefits continue")
 
 payable <- read_csv("data/figure9.csv") %>%
-  mutate(law = "Payable law") %>%
+  mutate(law = "Benefits cut 25%") %>%
   rename(ncharts_reprate = ncharts_reprate_payable)
 
 chart9 <- bind_rows(scheduled, payable) %>%
@@ -474,11 +496,11 @@ chart9 <- bind_rows(scheduled, payable) %>%
   group_by(doby, law) %>%
   summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
   ungroup() %>%
-  mutate(law = factor(law, levels = c("Scheduled law", "Payable law"))) %>%
+  mutate(law = factor(law, levels = c("Current Social Security benefits continue", "Benefits cut 25%"))) %>%
   mutate(doby = rename_cohort(doby)) %>%  
   ggplot(aes(doby, rep_rate_threshold, fill = law)) +
   geom_col(position = "dodge") +
-  geom_text(mapping = aes(label = scales::percent(rep_rate_threshold / 100)), 
+  geom_text(mapping = aes(label = scales::percent_format(accuracy = 1)(rep_rate_threshold / 100)), 
             vjust = -1,
             position = position_dodge(width = 0.8)) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
@@ -488,12 +510,12 @@ chart9 <- bind_rows(scheduled, payable) %>%
   remove_axis()
 
 # create the output plot
-plotr(titler("Social Security Insolvency Will Damage Retirement Security"),
-      subtitler("Age 70 Percentage of People Who fail to Replace 75% of Age 50-59 Earnings"),
+plotr(titler("Retirement Incomes May Fall Short for about 4 in 10 Early Millennials if Policymakers\nIgnore Social Security’s Financing Gap"),
+      subtitler("Percentage of adults unable to replace 75% of their preretirement earnings at age 70 "),
       chart9,
       caption,
       sourcer("DYNASIM4, ID963"),
-      heights = c(1.8, 1, 30, 1, 1))
+      heights = c(2.8, 1, 30, 1, 1))
 ```
 
 ## Chart 12
@@ -501,10 +523,11 @@ plotr(titler("Social Security Insolvency Will Damage Retirement Security"),
 ```{r, chart12}
 chart12 <- read_csv("data/figure12.csv") %>%
   filter(doby %in% cohorts) %>%
-  rename(`Scheduled law` = ncharts_pov_Mean, 
-         `Payable law` = ncharts_pov_payable_Mean) %>%
+  rename(`Current Social Security benefits continue` = ncharts_pov_Mean, 
+         `Benefits cut 25%` = ncharts_pov_payable_Mean) %>%
+  mutate(doby = rename_cohort(doby)) %>% 
   gather(key = "law", value = "poverty", -doby, -Obs) %>%
-  mutate(law = factor(law, levels = c("Scheduled law", "Payable law"))) %>%
+  mutate(law = factor(law, levels = c("Current Social Security benefits continue", "Benefits cut 25%"))) %>%
   ggplot(aes(doby, poverty, fill = law)) +
   geom_col(position = "dodge") +
   geom_text(mapping = aes(label = scales::percent_format(accuracy = 0.1)(poverty)), 
@@ -517,17 +540,17 @@ chart12 <- read_csv("data/figure12.csv") %>%
   remove_axis()  
 
 # create the output plot
-plotr(titler("Social Security Insolvency Will Increase Poverty"),
-      subtitler("Percentage of people in poverty at age 70"),
+plotr(titler("A 25 Percent Social Security Benefit Cut Could Leave About One in Eight Gen X and\nEarly Millennial Retirees in Poverty"),
+      subtitler("Percentage of adults with incomes below the federal poverty level at age 70 "),
       chart12,
       caption,
       sourcer("DYNASIM4, ID963"),
-      heights = c(1.8, 1, 30, 1, 1))
+      heights = c(2.6, 1, 30, 1, 1))
 ```
 
 ## Chart 10 (experimental): More wives are out-earning their husband's
 
-```{r}
+```{r, chart10}
 read_csv("data/figure10.csv") %>%
   filter(doby <= 1985) %>%
   mutate(doby = case_when(
@@ -537,6 +560,7 @@ read_csv("data/figure10.csv") %>%
     doby <= 1975 ~ "1966-1975",
     doby <= 1985 ~ "1976-1985")
   ) %>% 
+  mutate(doby = rename_cohort(doby)) %>%   
   ggplot(aes(x = lifetime_earn, y = slifetime_earn)) +
   geom_point(alpha = 0.05) +
   geom_smooth(method = "lm", formula = y ~ x - 1) +
@@ -559,41 +583,73 @@ read_csv("data/figure10.csv") %>%
 
 ```
 
-## Chart 11
+## Chart 13 taxes
 
-```{r}
-read_csv("data/figure11.csv") %>%
-  mutate(year = doby + 70,
-         insolvency_delta = (ncharts_income_payable - ncharts_income) / ncharts_income,
-         quintile = cut(lifetime_earn, 5)) %>%
-  ggplot(aes(lifetime_earn, ncharts_reprate)) +
-  geom_point(alpha = 0.01)
+```{r, chart13}
 
-read_csv("data/figure11.csv") %>%
-  ggplot(aes(ncharts_income, ncharts_reprate)) +
-  geom_point(alpha = 0.01) +
-  scale_x_continuous(limits = c(0, 1000000)) +
-  scale_y_continuous(limits = c(0, 10))
+chart13 <- read_csv("data/figure13.csv") %>%
+  filter(doby %in% cohorts) %>%
+  mutate(avg_annual_tax_rate = (-1 * ncharts_tax_Mean) / ncharts_income_Mean) %>%
+  mutate(doby = rename_cohort(doby)) %>%    
+  filter(is.na(nchartQuin)) %>%
+  ggplot(aes(doby, avg_annual_tax_rate)) +
+  geom_col() +
+  geom_text(mapping = aes(label = scales::percent_format(accuracy = 1)(avg_annual_tax_rate)), 
+            vjust = -1,
+            position = position_dodge(width = 0.8)) +    
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
+  labs(x = "Birth Cohort",
+       y = NULL) +
+  remove_ticks() +
+  remove_axis()  
 
-
-read_csv("data/figure11.csv") %>%
-  mutate(percentile = ntile(ncharts_income, n = 100)) %>%
-  ggplot(aes(percentile, ncharts_reprate)) +
-  geom_point(alpha = 0.01) +
-  scale_x_continuous(limits = c(0, 100)) +
-  scale_y_continuous(limits = c(0, 10))
+plotr(titler("Millennials Will Have Higher Tax Rates in Retirement than Boomers"),
+      subtitler("Average annual tax rate at age 70 (percent)"),
+      chart13,
+      caption,
+      sourcer("DYNASIM4, ID963"),
+      heights = c(2.6, 1, 30, 1, 1))
 ```
 
-## Chart 13 (experimental): Failure to replace 75% of income spans the lifetime income spectrum
 
-```{r}
-figure11 <- read_csv("data/figure11.csv")
 
-figure11 %>%
-  mutate(lifetime_earn_percentile = ntile(lifetime_earn, 100)) %>%
-  group_by(lifetime_earn_percentile) %>%
-  mutate(ncharts_reprate = ncharts_reprate < 0.75) %>%
-  summarize(ncharts_reprate = mean(ncharts_reprate)) %>%
-  ggplot(aes(lifetime_earn_percentile, ncharts_reprate)) +
-  geom_point()
-```
+
+
+<!-- ## Chart 11 -->
+
+<!-- ```{r} -->
+<!-- read_csv("data/figure11.csv") %>% -->
+<!--   mutate(year = doby + 70, -->
+<!--          insolvency_delta = (ncharts_income_payable - ncharts_income) / ncharts_income, -->
+<!--          quintile = cut(lifetime_earn, 5)) %>% -->
+<!--   ggplot(aes(lifetime_earn, ncharts_reprate)) + -->
+<!--   geom_point(alpha = 0.01) -->
+
+<!-- read_csv("data/figure11.csv") %>% -->
+<!--   ggplot(aes(ncharts_income, ncharts_reprate)) + -->
+<!--   geom_point(alpha = 0.01) + -->
+<!--   scale_x_continuous(limits = c(0, 1000000)) + -->
+<!--   scale_y_continuous(limits = c(0, 10)) -->
+
+
+<!-- read_csv("data/figure11.csv") %>% -->
+<!--   mutate(percentile = ntile(ncharts_income, n = 100)) %>% -->
+<!--   ggplot(aes(percentile, ncharts_reprate)) + -->
+<!--   geom_point(alpha = 0.01) + -->
+<!--   scale_x_continuous(limits = c(0, 100)) + -->
+<!--   scale_y_continuous(limits = c(0, 10)) -->
+<!-- ``` -->
+
+<!-- ## Chart 13 (experimental): Failure to replace 75% of income spans the lifetime income spectrum -->
+
+<!-- ```{r} -->
+<!-- figure11 <- read_csv("data/figure11.csv") -->
+
+<!-- figure11 %>% -->
+<!--   mutate(lifetime_earn_percentile = ntile(lifetime_earn, 100)) %>% -->
+<!--   group_by(lifetime_earn_percentile) %>% -->
+<!--   mutate(ncharts_reprate = ncharts_reprate < 0.75) %>% -->
+<!--   summarize(ncharts_reprate = mean(ncharts_reprate)) %>% -->
+<!--   ggplot(aes(lifetime_earn_percentile, ncharts_reprate)) + -->
+<!--   geom_point() -->
+<!-- ``` -->
