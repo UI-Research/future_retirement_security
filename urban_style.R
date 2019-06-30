@@ -14,7 +14,9 @@ subtitler <- function(subtitle) {
            x = unit(0, "npc"), 
            hjust = 0, 
            vjust = 0.5,
-           gp = gpar(fontsize = 9.5, fontfamily = "Lato"))
+           gp = gpar(fontsize = 9.5, 
+                     fontfamily = "Lato",
+                     fontface = "italic"))
 }
 
 sourcer <- function(source) {
@@ -40,13 +42,14 @@ caption <- grobTree(
            x = unit(1, "npc"),  
            y = unit(0, "npc"),
            hjust = 1, 
-           vjust = 0),
+           vjust = 0,
+           gp = gpar(fontface = "bold")),
   textGrob(label = "U R B A N  ", 
            x = unit(1, "npc") - grobWidth("caption1") - unit(0.01, "lines"),         
            y = unit(0, "npc"), 
            hjust = 1, 
            vjust = 0, 
-           gp = gpar(col = "#1696d2"))
+           gp = gpar(col = "#1696d2", fontface = "bold"))
 )
 
 plotr <- function(..., heights) {
