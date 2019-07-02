@@ -54,30 +54,30 @@ cohorts <- c("1936-1945", "1946-1955", "1956-1965", "1966-1975", "1976-1985")
 rename_cohort <- function(x, two_lines = TRUE) {
   if (two_lines == TRUE) {
     cohort <- recode(x,
-      `1936-1945` = "Pre-boomers\n(1936–1945)", 
-      `1946-1955` = "Early boomers\n(1946–1955)", 
-      `1956-1965` = "Late boomers\n(1956–1965)", 
-      `1966-1975` = "Gen Xers\n(1966–1975)", 
-      `1976-1985` = "Xennials\n(1976-1985)")  
+      `1936-1945` = "Pre-boomers\n(1936—1945)", 
+      `1946-1955` = "Early boomers\n(1946—1955)", 
+      `1956-1965` = "Late boomers\n(1956—1965)", 
+      `1966-1975` = "Gen Xers\n(1966—1975)", 
+      `1976-1985` = "Xennials\n(1976—1985)")  
     
-    factor(cohort, levels = c("Pre-boomers\n(1936–1945)", 
-                              "Early boomers\n(1946–1955)", 
-                              "Late boomers\n(1956–1965)", 
-                              "Gen Xers\n(1966–1975)", 
-                              "Xennials\n(1976-1985)"))
+    factor(cohort, levels = c("Pre-boomers\n(1936—1945)", 
+                              "Early boomers\n(1946—1955)", 
+                              "Late boomers\n(1956—1965)", 
+                              "Gen Xers\n(1966—1975)", 
+                              "Xennials\n(1976—1985)"))
   } else {
     cohort <- recode(x,
-      `1936-1945` = "Pre-boomers (1936–1945)", 
-      `1946-1955` = "Early boomers (1946–1955)", 
-      `1956-1965` = "Late boomers (1956–1965)", 
-      `1966-1975` = "Gen Xers (1966–1975)", 
-      `1976-1985` = "Xennials (1976-1985)") 
+      `1936-1945` = "Pre-boomers (1936—1945)", 
+      `1946-1955` = "Early boomers (1946—1955)", 
+      `1956-1965` = "Late boomers (1956—1965)", 
+      `1966-1975` = "Gen Xers (1966—1975)", 
+      `1976-1985` = "Xennials (1976—1985)") 
       
-    factor(cohort, levels = c("Pre-boomers (1936–1945)", 
-                              "Early boomers (1946–1955)", 
-                              "Late boomers (1956–1965)", 
-                              "Gen Xers (1966–1975)", 
-                              "Xennials (1976-1985)"))
+    factor(cohort, levels = c("Pre-boomers (1936—1945)", 
+                              "Early boomers (1946—1955)", 
+                              "Late boomers (1956—1965)", 
+                              "Gen Xers (1966—1975)", 
+                              "Xennials (1976—1985)"))
   }
 }
 
@@ -113,15 +113,15 @@ to_ordinal <- function(x, capitalize = FALSE, as_factor = FALSE) {
 }
 ```
 
-## Theme 1: Retirement Incomes are Increasing
+## Theme 1: Retirement incomes will continue to rise
 
 ```{r theme1}
 chart2 <- read_csv("data/figure2.csv") %>%
   filter(doby %in% cohorts) %>%
   mutate(doby = rename_cohort(doby)) %>%  
-  ggplot(aes(doby, ncharts_aftertax_income_P50)) +
+  ggplot(aes(doby, pc_cen_net_income_P50)) +
   geom_col() +
-  geom_text(mapping = aes(label = scales::dollar(signif(ncharts_aftertax_income_P50, 3), largest_with_cents = 0)), 
+  geom_text(mapping = aes(label = scales::dollar(signif(pc_cen_net_income_P50, 3), largest_with_cents = 0)), 
             vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1))) +
   labs(x = "Birth Cohort",
@@ -138,7 +138,17 @@ plotr(titler("A typical Xennial retiree will receive about 30 percent more net i
       heights = c(2.8, 1.5, 30, 1, 1))
 ```
 
-## Theme 2: Women's Lifetime Earnings are Increasing
+```{r}
+data2 <- read_csv("data/figure2.csv") %>%
+  filter(doby %in% cohorts)
+
+data2[data2$doby == "1966-1975", "pc_cen_net_income_P50"] / data2[data2$doby == "1936-1945", "pc_cen_net_income_P50"] - 1
+
+data2[data2$doby == "1976-1985", "pc_cen_net_income_P50"] / data2[data2$doby == "1936-1945", "pc_cen_net_income_P50"] - 1
+
+```
+
+## Theme 2: Women’s increased earnings will power retirement income growth 
 
 ```{r theme2}
 chart4 <- read_csv("data/figure4.csv") %>%
@@ -167,14 +177,27 @@ plotr(titler("Over her lifetime, a typical Xennial woman will earn more than twi
       heights = c(2.6, 2, 30, 1, 1))
 ```
 
-##  Theme 3: The share of retirees who will likely experience a decline in living standards will grow over time
+```{r}
+data4 <- read_csv("data/figure4.csv") %>%
+  filter(doby %in% cohorts)
+
+data4[data4$doby == "1966-1975" & data4$male == "2.Female", "lifetime_earn_P50"] / data4[data4$doby == "1936-1945" & data4$male == "2.Female", "lifetime_earn_P50"] - 1
+
+data4[data4$doby == "1976-1985" & data4$male == "2.Female", "lifetime_earn_P50"] / data4[data4$doby == "1936-1945" & data4$male == "2.Female", "lifetime_earn_P50"] - 1
+
+data4[data4$doby == "1976-1985" & data4$male == "1.Male", "lifetime_earn_P50"] / data4[data4$doby == "1936-1945" & data4$male == "1.Male", "lifetime_earn_P50"] - 1
+
+data4[data4$doby == "1976-1985" & data4$male == "1.Male", "lifetime_earn_P50"] / data4[data4$doby == "1976-1985" & data4$male == "2.Female", "lifetime_earn_P50"] - 1
+```
+
+## Theme 3: Despite growth in retirement incomes, retirement resources will fall short for more Gen Xers and Xennials  
 
 * Numerator: age 70, price-adjusted, per-capita annuitized income
 * Denominator: mean price-adjusted, per-capita earnings from ages 50 to 59
 
 ```{r theme3}
 chart1 <- read_csv("data/figure1.csv") %>%
-  filter(ncharts_reprate %in% c("0-50%", "50-75%")) %>%
+  filter(ann_reprate %in% c("0-50%", "50-75%")) %>%
   filter(doby %in% cohorts) %>%
   mutate(doby = rename_cohort(doby)) %>%
   group_by(doby) %>%
@@ -183,7 +206,7 @@ chart1 <- read_csv("data/figure1.csv") %>%
   geom_col() +
   geom_text(mapping = aes(label = scales::percent_format(accuracy = 1)(rep_rate_threshold / 100)), vjust = -1) +    
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.1)),
-                     limits = c(0, 50)) +
+                     limits = c(0, 40)) +
   labs(x = "Birth Cohort",
        y = NULL) +
   remove_ticks() +
@@ -198,7 +221,7 @@ plotr(titler("Nearly one-third of Xennials will see their living standards fall 
       heights = c(2, 2, 30, 1, 1))
 ```
 
-## Theme 4: The share of retirees who will likely experience a decline in living standards will grow slowly over time
+## Theme 4: Social Security’s financing problems threaten retirement security 
 
 ```{r, theme4}
 
@@ -207,10 +230,10 @@ scheduled <- read_csv("data/figure1.csv") %>%
 
 payable <- read_csv("data/figure9.csv") %>%
   mutate(law = "Benefits cut 25%") %>%
-  rename(ncharts_reprate = ncharts_reprate_payable)
+  rename(ann_reprate = ann_payable_reprate)
 
 chart9 <- bind_rows(scheduled, payable) %>%
-  filter(ncharts_reprate %in% c("0-50%", "50-75%")) %>%
+  filter(ann_reprate %in% c("0-50%", "50-75%")) %>%
   filter(doby %in% cohorts) %>%
   group_by(doby, law) %>%
   summarize(rep_rate_threshold = sum(count_PctSum_10_count)) %>%
@@ -237,7 +260,7 @@ plotr(titler("Retirement incomes may fall short for about 4 in 10 Xennials if po
       heights = c(3, 1.5, 30, 1, 1))
 ```
 
-## Theme 5: Social Security Is a Pillar of Retirement Security
+## Theme 5: Social Security cuts would disproportionately harm low-income retirees 
 
 * Quintiles are based on per-capita, price-adjusted, shared annuitized income with federal taxes, state taxes, payroll taxes and the Medicare surtax at age 70.
 * Values are the mean of the different sources of income in each quintile. 
@@ -250,11 +273,12 @@ Other income = pcNotModel_Mean
 incomes <- c("Other income", "Financial income", "DB pension income", "Earnings", "Social Security")
 quintile <- c("Bottom quintile", "Second quintile", "Third quintile", "Fourth quintile", "Top quintile")
 
-chart7alt <- read_csv("data/figure7.csv") %>%
+chart7alt <- read_csv("data/figure7b.csv") %>%
   mutate(nchartQuin = paste(to_ordinal(nchartQuin), "quintile")) %>%
   mutate(nchartQuin = factor(nchartQuin, levels = quintile)) %>%
-  mutate(ss_share = PCssb_Mean / ncharts_aftertax_income_Mean) %>%
+  mutate(ss_share = PCssb_Mean / pc_cen_income_Mean) %>%
   filter(doby %in% cohorts) %>%
+  mutate(doby = rename_cohort(doby)) %>%    
   select(nchartQuin, doby, ss_share) %>%
   ggplot(aes(doby, ss_share, fill = nchartQuin)) +
   geom_col(position = "dodge") +
@@ -270,7 +294,7 @@ chart7alt <- read_csv("data/figure7.csv") %>%
   remove_axis()
 
 # create the output plot
-plotr(titler("Social Security accounts for about 90 percent of income for low-income retirees"),
+plotr(titler("Social Security accounts for about 85 percent of income for low-income beneficiaries"),
       subtitler("Share of per capita family income at age 70 from Social Security by income quintile"),
       chart7alt,
       caption,
@@ -278,13 +302,13 @@ plotr(titler("Social Security accounts for about 90 percent of income for low-in
       heights = c(1.8, 1, 30, 1, 1))
 ```
 
-## Theme 6:
+## Theme 6: Old-age poverty rates could rise if policymakers ignore Social Security’s financial problems
 
 ```{r, theme6}
 chart12 <- read_csv("data/figure12.csv") %>%
   filter(doby %in% cohorts) %>%
-  rename(`Current Social Security benefits continue` = ncharts_pov_Mean, 
-         `Benefits cut 25%` = ncharts_pov_payable_Mean) %>%
+  rename(`Current Social Security benefits continue` = poverty_status_Mean, 
+         `Benefits cut 25%` = poverty_status_payable_Mean) %>%
   mutate(doby = rename_cohort(doby)) %>% 
   gather(key = "law", value = "poverty", -doby, -Obs) %>%
   mutate(law = factor(law, levels = c("Current Social Security benefits continue", "Benefits cut 25%"))) %>%
@@ -321,7 +345,7 @@ chart6 <- read_csv("data/figure6.csv") %>%
                           `3.Hispanic` = "Hispanic"
                           )) %>%  
   mutate(doby = rename_cohort(doby)) %>%  
-  ggplot(aes(doby, ncharts_aftertax_income_P50, fill = raceeth)) +
+  ggplot(aes(doby, pc_cen_net_income_P50, fill = raceeth)) +
   geom_col(position = "dodge") +
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.15)), 
                      labels = scales::dollar) +
@@ -331,14 +355,32 @@ chart6 <- read_csv("data/figure6.csv") %>%
 
 # create the output plot
 plotr(titler("Although retirement incomes are projected to rise for people of color, they\nwill continue to lag far behind incomes for non-Hispanic white people"),
-      subtitler("Median annual per capita after-tax family income at age 70 (thousands of constant 2018 dollars)"),
+      subtitler("Median annual per capita after-tax family income at age 70 (constant 2018 dollars)"),
       chart6,
       caption,
       sourcer("DYNASIM4, ID963"),
       heights = c(3, 1.5, 30, 1, 1))
 ```
 
-## Theme 8: The Gender Gap in Social Secuirty Benefits is Narrowing
+
+
+
+
+```{r}
+data6 <- read_csv("data/figure6.csv") %>%
+  filter(doby %in% cohorts)
+
+1 - data6[data6$doby == "1936-1945" & data6$raceeth == "2.Black, Non-Hisp" & !is.na(data6$raceeth), "pc_cen_net_income_P50"] / data6[data6$doby == "1936-1945" & data6$raceeth == "1.White, Non-Hisp" & !is.na(data6$raceeth), "pc_cen_net_income_P50"]
+
+(data6[data6$doby == "1936-1945" & data6$raceeth == "3.Hispanic" & !is.na(data6$raceeth), "pc_cen_net_income_P50"] - data6[data6$doby == "1936-1945" & data6$raceeth == "1.White, Non-Hisp" & !is.na(data6$raceeth), "pc_cen_net_income_P50"]) / data6[data6$doby == "1936-1945" & data6$raceeth == "1.White, Non-Hisp" & !is.na(data6$raceeth), "pc_cen_net_income_P50"]
+
+
+
+```
+
+
+
+## Theme 8: The gender gap in Social Security benefits will narrow
 
 ```{r, theme8}
 chart3b <- read_csv("data/figure3b.csv") %>%
@@ -366,13 +408,30 @@ plotr(titler("For Xennials, women’s median Social Security benefits at age 70 
       heights = c(2.6, 2, 30, 1, 1))
 ```
 
-## Theme 9
+```{r}
+data3b <- read_csv("data/figure3b.csv") %>%
+  filter(doby %in% cohorts)
+
+data3b[data3b$doby == "1976-1985" & data3b$male == "1.Male", "Ownssb_P50"] / data3b[data3b$doby == "1936-1945" & data3b$male == "1.Male", "Ownssb_P50"]
+
+data3b[data3b$doby == "1976-1985" & data3b$male == "2.Female", "Ownssb_P50"] / data3b[data3b$doby == "1936-1945" & data3b$male == "2.Female", "Ownssb_P50"]
+
+
+
+1 - data3b[data3b$doby == "1936-1945" & data3b$male == "2.Female", "Ownssb_P50"] / data3b[data3b$doby == "1936-1945" & data3b$male == "1.Male", "Ownssb_P50"]
+
+1 - data3b[data3b$doby == "1976-1985" & data3b$male == "2.Female", "Ownssb_P50"] / data3b[data3b$doby == "1976-1985" & data3b$male == "1.Male", "Ownssb_P50"]
+```
+
+
+
+## Theme 9: Gen Xers and Xennials will pay more taxes in retirement
 
 ```{r, theme9}
 
 chart13 <- read_csv("data/figure13.csv") %>%
   filter(doby %in% cohorts) %>%
-  mutate(avg_annual_tax_rate = (-1 * ncharts_tax_Mean) / ncharts_income_Mean) %>%
+  mutate(avg_annual_tax_rate = (-1 * pc_tot_tax_Mean) / pc_cen_income_Mean) %>%
   mutate(doby = rename_cohort(doby)) %>%    
   filter(is.na(nchartQuin)) %>%
   ggplot(aes(doby, avg_annual_tax_rate)) +
