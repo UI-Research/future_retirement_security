@@ -134,7 +134,7 @@ plotr(titler("A typical Xennial retiree will receive about 30 percent more net i
       subtitler("Median annual per capita after-tax family income at age 70 (constant 2018 dollars)"),
       chart2,
       caption,
-      sourcer("DYNASIM4, ID963"),
+      sourcer("DYNASIM4, ID963."),
       noter("This income measure includes Social Security, earnings, defined-benefit pensions, Supplemental Security Income, other government benefits, interest, dividends, capital gains, and retirement account withdrawals, minus payroll taxes, federal and state income taxes, and Medicare surtaxes. The analysis computes a per capita measure by dividing total family income by two for married people and assumes that scheduled Social Security benefits are paid."),
       heights = c(4, 1.5, 30, 1, 1, 4))
 ```
@@ -174,7 +174,7 @@ plotr(titler("Over her lifetime, a typical Xennial woman will earn more than twi
       subtitler("Median earnings from ages 25 to 69 (constant 2018 dollars)"),
       chart4,
       caption,
-      sourcer("DYNASIM4, ID963"),
+      sourcer("DYNASIM4, ID963."),
       noter("Estimates are restricted to adults who survive to age 70."), 
       heights = c(4, 2, 30, 1, 1, 1))
 ```
@@ -219,7 +219,7 @@ plotr(titler("Nearly one-third of Xennials will see their living standards fall 
       subtitler("Share of adults unable to replace 75 percent of preretirement earnings at age 70"),
       chart1,
       caption,
-      sourcer("DYNASIM4, ID963"),
+      sourcer("DYNASIM4, ID963."),
       noter("The analysis compares per capita family income at age 70 to average annual family earnings received from ages 50 to 59, both measured in constant 2018 dollars as adjusted by the change in the consumer price index. The income measure at age 70 includes Social Security, earnings, defined-benefit pensions, Supplemental Security Income, other government benefits, and the annual income from an annuity valued at 80 percent of financial assets (including retirement accounts). The analysis computes a per capita measure by dividing total family income by two for married people and assumes that scheduled Social Security benefits are paid."), 
       heights = c(4, 2, 30, 1, 1, 5))
 ```
@@ -259,7 +259,7 @@ plotr(titler("Retirement incomes may fall short for about 4 in 10 Xennials if po
       subtitler("Share of adults unable to replace 75 percent of their preretirement earnings at age 70 "),
       chart9,
       caption,
-      sourcer("DYNASIM4, ID963"),
+      sourcer("DYNASIM4, ID963."),
       noter("The analysis compares per capita family income at age 70 to average annual earnings received from ages 50 to 59, both measured in constant 2018 dollars as adjusted by the change in the consumer price index. The income measure at age 70 includes Social Security, earnings, defined-benefit pensions, Supplemental Security Income, other government benefits, and the annual income from an annuity valued at 80 percent of financial assets (including retirement accounts). The analysis computes a per capita measure by dividing total family income by two for married people.", width = 131),
       heights = c(6.5, 1.5, 30, 1, 1, 5))
 ```
@@ -302,7 +302,7 @@ plotr(titler("Social Security accounts for about 85 percent of income for low-in
       subtitler("Share of per capita family income at age 70 from Social Security by income quintile"),
       chart7alt,
       caption,
-      sourcer("DYNASIM4, ID963"),
+      sourcer("DYNASIM4, ID963."),
       noter("This income measure includes Social Security, earnings, defined-benefit pensions, Supplemental Security Income, other government benefits, interest, dividends, capital gains, and retirement account withdrawals. The analysis computes a per capita measure by dividing total family income by two for married people. The sample is restricted to Social Security beneficiaries. The analysis assumes that scheduled Social Security benefits are paid."),
       heights = c(4, 1, 30, 1, 1, 4))
 ```
@@ -333,7 +333,7 @@ plotr(titler("A 25 percent Social Security benefit cut could leave about 1 in 12
       subtitler("Percentage of adults with incomes below the federal poverty level at age 70 "),
       chart12,
       caption,
-      sourcer("DYNASIM4, ID963"),
+      sourcer("DYNASIM4, ID963."),
       noter("The analysis compares family income from Social Security, earnings, defined-benefit pensions, Supplemental Security Income, other government benefits, interest, dividends, rent, retirement account withdrawals, and income from coresident family members to the federal poverty level. "),
       heights = c(4, 1.5, 30, 1, 1, 3))
 ```
@@ -364,7 +364,7 @@ plotr(titler("Although retirement incomes are projected to rise for people of co
       subtitler("Median annual per capita after-tax family income at age 70 (constant 2018 dollars)"),
       chart6,
       caption,
-      sourcer("DYNASIM4, ID963"),
+      sourcer("DYNASIM4, ID963."),
       noter("This income measure includes Social Security, earnings, defined-benefit pensions, Supplemental Security Income, other government benefits, interest, dividends, capital gains, and retirement account withdrawals, minus payroll taxes, federal and state income taxes, and Medicare surtaxes. The analysis computes a per capita measure by dividing total family income by two for married people. The analysis assumes that scheduled Social Security benefits are paid. The chart excludes other racial groups because of small sample sizes."),
       heights = c(6.5, 1.2, 28, 1, 1, 4.5))
 ```
@@ -408,7 +408,7 @@ plotr(titler("For Xennials, women’s median Social Security benefits at age 70 
       subtitler("Median annual Social Security income at age 70 (constant 2018 dollars)"),
       chart3b,
       caption,
-      sourcer("DYNASIM4, ID963"),
+      sourcer("DYNASIM4, ID963."),
       noter("Analysis assumes that promised Social Security benefit payments will continue."), 
       heights = c(4, 1, 30, 1, 1, 1))
 ```
@@ -421,14 +421,10 @@ data3b[data3b$doby == "1976-1985" & data3b$male == "1.Male", "Ownssb_P50"] / dat
 
 data3b[data3b$doby == "1976-1985" & data3b$male == "2.Female", "Ownssb_P50"] / data3b[data3b$doby == "1936-1945" & data3b$male == "2.Female", "Ownssb_P50"]
 
-
-
 1 - data3b[data3b$doby == "1936-1945" & data3b$male == "2.Female", "Ownssb_P50"] / data3b[data3b$doby == "1936-1945" & data3b$male == "1.Male", "Ownssb_P50"]
 
 1 - data3b[data3b$doby == "1976-1985" & data3b$male == "2.Female", "Ownssb_P50"] / data3b[data3b$doby == "1976-1985" & data3b$male == "1.Male", "Ownssb_P50"]
 ```
-
-
 
 ## Theme 9: Gen Xers and Xennials will pay more taxes in retirement
 
@@ -454,7 +450,7 @@ plotr(titler("Average tax rates for retirees will grow over time"),
       subtitler("Average annual tax rate at age 70"),
       chart13,
       caption,
-      sourcer("DYNASIM4, ID963"),
+      sourcer("DYNASIM4, ID963."),
       noter("Taxes include payroll taxes, federal and state income taxes, and Medicare surtaxes. Property, sales, and excise taxes are excluded.\nThe analysis assumes that current tax rules continue indefinitely and that scheduled Social Security benefits are paid."), 
       heights = c(2, 1, 30, 1, 1, 2))
 ```
