@@ -1646,8 +1646,8 @@ set_urbn_defaults(style = &quot;print&quot;)</code></pre>
 <div id="aaron-r.-williams" class="section level3">
 <h3>Aaron R. Williams</h3>
 </div>
-<div id="july-03-2019-1652-pm" class="section level3">
-<h3>July 03, 2019 16:52 PM</h3>
+<div id="july-05-2019-0914-am" class="section level3">
+<h3>July 05, 2019 09:14 AM</h3>
 <pre class="r"><code>cohorts &lt;- c(&quot;1936-1945&quot;, &quot;1946-1955&quot;, &quot;1956-1965&quot;, &quot;1966-1975&quot;, &quot;1976-1985&quot;)
 
 #&#39; rename_cohort
@@ -1872,12 +1872,8 @@ plotr(titler(&quot;Retirement incomes may fall short for about 4 in 10 Xennials 
 <h2>Theme 5: Social Security cuts would disproportionately harm low-income retirees</h2>
 <ul>
 <li>Quintiles are based on per-capita, price-adjusted, shared annuitized income with federal taxes, state taxes, payroll taxes and the Medicare surtax at age 70.</li>
-<li>Values are the mean of the different sources of income in each quintile.</li>
 </ul>
-<p>Financial income = per-capita interest + per-capita dividends + per-capita rental income + per-capita IRA withdrawals</p>
-<p>Other income = pcNotModel_Mean</p>
-<pre class="r"><code>incomes &lt;- c(&quot;Other income&quot;, &quot;Financial income&quot;, &quot;DB pension income&quot;, &quot;Earnings&quot;, &quot;Social Security&quot;)
-quintile &lt;- c(&quot;Bottom quintile&quot;, &quot;Second quintile&quot;, &quot;Third quintile&quot;, &quot;Fourth quintile&quot;, &quot;Top quintile&quot;)
+<pre class="r"><code>quintile &lt;- c(&quot;Bottom quintile&quot;, &quot;Second quintile&quot;, &quot;Third quintile&quot;, &quot;Fourth quintile&quot;, &quot;Top quintile&quot;)
 
 chart7alt &lt;- read_csv(&quot;data/figure7b.csv&quot;) %&gt;%
   mutate(nchartQuin = paste(to_ordinal(nchartQuin), &quot;quintile&quot;)) %&gt;%
