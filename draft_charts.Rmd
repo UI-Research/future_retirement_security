@@ -267,14 +267,8 @@ plotr(titler("Retirement incomes may fall short for about 4 in 10 Xennials if po
 ## Theme 5: Social Security cuts would disproportionately harm low-income retirees 
 
 * Quintiles are based on per-capita, price-adjusted, shared annuitized income with federal taxes, state taxes, payroll taxes and the Medicare surtax at age 70.
-* Values are the mean of the different sources of income in each quintile. 
-
-Financial income = per-capita interest + per-capita dividends + per-capita rental income + per-capita IRA withdrawals
-
-Other income = pcNotModel_Mean
 
 ```{r theme5}
-incomes <- c("Other income", "Financial income", "DB pension income", "Earnings", "Social Security")
 quintile <- c("Bottom quintile", "Second quintile", "Third quintile", "Fourth quintile", "Top quintile")
 
 chart7alt <- read_csv("data/figure7b.csv") %>%
