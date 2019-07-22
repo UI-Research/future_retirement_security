@@ -1,4 +1,4 @@
-titler <- function(title, width = 58) {
+titler <- function(title, width = 68) {
   
   if (width == FALSE) {
     textGrob(title, 
@@ -6,18 +6,20 @@ titler <- function(title, width = 58) {
              y = unit(1, "npc"), 
              hjust = 0, 
              vjust = 1,
-             gp = gpar(fontsize = 18, 
+             gp = gpar(fontsize = 14, 
                        fontfamily = "Lato", 
-                       lineheight = 1))    
+                       lineheight = 1,
+                       fontface = "bold"))    
   } else {
     textGrob(stringr::str_wrap(title, width = width), 
              x = unit(0, "npc"), 
              y = unit(1, "npc"), 
              hjust = 0, 
              vjust = 1,
-             gp = gpar(fontsize = 18, 
+             gp = gpar(fontsize = 14, 
                        fontfamily = "Lato", 
-                       lineheight = 1))
+                       lineheight = 1,
+                       fontface = "bold"))
   }
 }
 
@@ -27,7 +29,7 @@ subtitler <- function(subtitle) {
            y = unit(1, "npc"),
            hjust = 0, 
            vjust = 1,
-           gp = gpar(fontsize = 12, 
+           gp = gpar(fontsize = 10, 
                      fontfamily = "Lato"))
 }
 
