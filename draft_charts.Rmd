@@ -130,7 +130,7 @@ chart2 <- read_csv("data/figure2.csv") %>%
   remove_axis()
 
 # create the output plot
-plotr(titler("A typical Xennial retiree will receive about 24 percent more net income than a typical retiree born 40 years earlier", width = 60),
+plotr(titler("A typical Xennial retiree will receiv 24 percent more net income\nthan a typical retiree born 40 years earlier", width = FALSE),
       subtitler("Median annual per capita after-tax family income at age 70 (constant 2018 dollars)"),
       chart2,
       caption,
@@ -403,7 +403,7 @@ plotr(titler("For Xennials, women’s median Social Security benefits at\nage 70
       chart3b,
       caption,
       sourcer("DYNASIM4, ID963."),
-      noter("Analysis assumes that promised Social Security benefit payments will continue."), 
+      noter("The analysis assumes that promised Social Security benefit payments will continue."), 
       heights = c(3.5, 1.5, 30, 1, 1, 1))
 ```
 
