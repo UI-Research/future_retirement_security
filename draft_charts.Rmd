@@ -130,7 +130,7 @@ chart2 <- read_csv("data/figure2.csv") %>%
   remove_axis()
 
 # create the output plot
-plotr(titler("A typical Xennial retiree will receiv 24 percent more net income\nthan a typical retiree born 40 years earlier", width = FALSE),
+plotr(titler("A typical Xennial retiree will receive 24 percent more net income\nthan a typical retiree born 40 years earlier", width = FALSE),
       subtitler("Median annual per capita after-tax family income at age 70 (constant 2018 dollars)"),
       chart2,
       caption,
@@ -215,7 +215,7 @@ chart1 <- read_csv("data/figure1.csv") %>%
   remove_axis()   
 
 # create the output plot
-plotr(titler("Nearly one-third of Xennials will see their\nliving standards fall when they retire", width = FALSE),
+plotr(titler("Nearly one-third of Xennials will see their living standards\nfall when they retire", width = FALSE),
       subtitler("Share of adults unable to replace 75 percent of preretirement earnings at age 70"),
       chart1,
       caption,
@@ -292,7 +292,7 @@ chart7alt <- read_csv("data/figure7b.csv") %>%
   remove_axis()
 
 # create the output plot
-plotr(titler("Social Security accounts for about 85 percent of\nincome for low-income beneficiaries", width = FALSE),
+plotr(titler("Social Security accounts for about 85 percent of income\nfor low-income beneficiaries", width = FALSE),
       subtitler("Share of per capita family income at age 70 from Social Security by income quintile"),
       chart7alt,
       caption,
